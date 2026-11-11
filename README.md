@@ -72,10 +72,12 @@ backend state is safe. This project does not claim to solve prompt injection in
 general. See [architecture diagrams](docs/ARCHITECTURE.md).
 
 Both versions remain selectable in the current app. `escape_room/v1.py` is the
-baseline; `engine.py` and `v2.py` implement the improved version. Git tag `v1.0`
-records the original baseline app; `v2.0` records the first V2 implementation.
-Later commits add tests, documentation and refinements. History was created during
-this development session, not backdated to imply weeks of work.
+baseline; `engine.py` and `v2.py` implement the improved version. GitHub branch `version-1`
+records the original baseline app; `version-2` records the first V2 implementation.
+The downloadable Git bundle retains the original `v1.0` and `v2.0` tags.
+Later commits add tests, documentation and refinements. The four saved development
+milestones were replayed onto GitHub after repository creation; their contents and
+order are preserved, with new commit IDs. History was not backdated.
 
 ## Tests and evidence
 
@@ -85,8 +87,8 @@ python -m pytest -q
 ```
 
 [40 automated checks passed](docs/automated-test-results.txt) locally on 11 November
-2026 using Python 3.12. GitHub Actions is configured for Python 3.11 but has not run
-until this project is uploaded. API responses are mocked in relevant automated
+2026 using Python 3.12. GitHub Actions is configured for Python 3.11; check the repository's Actions tab
+for its current result. The local result above is distinct from hosted CI. API responses are mocked in relevant automated
 tests; these do not establish actual Gemini behavior.
 
 - [Test cases and V1/V2 comparison](docs/TESTING.md)
@@ -131,3 +133,10 @@ Uses [Streamlit](https://docs.streamlit.io/), the
 the shorter requirements files. Built for AlokKevadiya with AI coding assistance.
 The student should review and personalize the implementation and report, perform
 live tests, and be able to explain every submitted component.
+
+## Repository and submission
+
+Published at https://github.com/AlokKevadiya/AI-Escape-Room. The repository was
+created private; grant your instructor access or deliberately change visibility
+before submitting. Live Gemini comparison tests and demonstration screenshots
+remain to be completed. See docs/DEMO.md for the remaining checklist.

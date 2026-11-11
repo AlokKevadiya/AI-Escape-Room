@@ -2,7 +2,7 @@
 
 ## What still requires the student
 
-- Create the GitHub repository and upload this project with its existing history.
+- Ensure the instructor can access the private GitHub repository.
 - Configure a free-tier Gemini key and valid model in local `.env`.
 - Run both versions live; record at least five comparison cases from TESTING.md.
 - Capture actual screenshots or a short screen recording. Current package has no
@@ -22,7 +22,7 @@
 Never show `.env`, API keys or private account details in a recording. Add only
 reviewed game screenshots under `docs/screenshots/` and link them from the README.
 
-## Restore and push the preserved history
+## Optional archive recovery (not needed for the uploaded repository)
 
 The downloadable package includes a Git bundle outside the source folder. On a
 computer with Git installed, from the extracted package directory:
@@ -39,7 +39,8 @@ git push origin --tags
 Create an EMPTY repository for this route (no README/license/gitignore generated
 by GitHub). Authenticate to GitHub normally; do not share a token in chat. If the
 repository already has commits, do not force-push: ask for help integrating it.
-The URL above is the intended destination, not a claim that the repository exists.
+The repository now exists and already contains the project. Do not run these push
+commands against it; this section documents archive recovery for a new empty destination.
 
 On the tablet, a GitHub Codespace can provide a terminal and Python environment;
 choose only a free allowance and stop it when finished. A Windows PC is another
