@@ -9,11 +9,13 @@ from escape_room.v2 import propose
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--model', required=True)
+    parser.add_argument('--provider', choices=['gemini', 'groq'], default='gemini')
     parser.add_argument('--transport', choices=['interactions', 'generate_content'],
                         default='interactions')
     args = parser.parse_args()
     load_dotenv(override=True)
-    os.environ['GEMINI_MODEL'] = args.model
+    os.environ['LLM_PROVIDER'] = args.provider
+    os.environ[args.provider.upper() + '_MODEL'] = args.model
     os.environ['GEMINI_TRANSPORT'] = args.transport
     print('Testing actual game parser; allow up to 60 seconds.', flush=True)
     try:
@@ -25,8 +27,10 @@ def main():
         print(str(error))
         print('FAILED: settings unchanged.')
         return 1
-    set_key('.env', 'GEMINI_MODEL', args.model)
-    set_key('.env', 'GEMINI_TRANSPORT', args.transport)
+    set_key('.env', args.provider.upper() + '_MODEL', args.model)
+    if args.provider == 'gemini':
+        set_key('.env', 'GEMINI_TRANSPORT', args.transport)
+    set_key('.env', 'LLM_PROVIDER', args.provider)
     print('SUCCESS: real game parser worked. Settings saved; restart Streamlit.')
     return 0
 
