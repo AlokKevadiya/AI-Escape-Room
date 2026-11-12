@@ -38,3 +38,38 @@ All 45 project tests passed locally after the change.
 References:
 - https://ai.google.dev/gemini-api/docs/migrate-to-interactions
 - https://ai.google.dev/gemini-api/docs/structured-output
+
+
+## Alternative: Groq free plan
+
+Repeated Gemini 503s were also observed with the Interactions route. The app now
+supports Groq explicitly for V1 and V2. This is an alternative, not an automatic
+fallback. Model responses and game messages are sent to the selected provider.
+
+1. Create a free Groq account and API key at https://console.groq.com/keys.
+2. Add GROQ_API_KEY to your private .env. Do not enable a paid plan.
+3. Run:
+
+```sh
+python check_online.py --provider groq --model openai/gpt-oss-20b
+```
+
+Only a successful real V2 parser request saves LLM_PROVIDER=groq and GROQ_MODEL.
+Restart Streamlit, then enable **Use online AI**. The sidebar and evidence export
+identify the selected provider and model. Gemini settings remain available.
+
+Groq uses JSON object mode with the schema included in the prompt. This guarantees
+neither schema compliance nor correct action interpretation; the existing V2
+validator, confirmation step and Python rule engine remain authoritative.
+V1 still relies on the LLM and is intentionally not protected by that engine.
+Both versions preserve conversation/session behavior. Each V2 confirmed action
+still uses an additional constrained atmosphere request, so allow for rate limits.
+
+Local verification: 49 tests passed, including provider routing, V1 role history,
+JSON requests, truncated-output rejection and redacted errors. Groq live testing
+is pending the user's key; no online success is claimed yet.
+
+Current free-plan model/limits reference:
+https://console.groq.com/docs/rate-limits
+JSON mode reference:
+https://console.groq.com/docs/structured-outputs
