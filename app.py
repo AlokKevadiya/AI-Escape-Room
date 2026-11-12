@@ -22,7 +22,10 @@ with st.sidebar:
     st.title("🗝️ The Library")
     st.caption("AN AI ESCAPE ROOM")
     version = st.selectbox("Game version", ["Version 2 — Validated", "Version 1 — Baseline"])
-    online = st.toggle("Use Gemini", value=False)
+    provider = os.getenv("LLM_PROVIDER", "gemini").strip().lower()
+    model = os.getenv(provider.upper() + "_MODEL", "")
+    online = st.toggle("Use online AI", value=False)
+    st.caption(f"Provider: {provider.capitalize()} • Model: {model or 'not configured'}")
     st.caption("Uses local .env settings; use a free-tier project only." if online else
                "Offline practice • deterministic commands, no AI calls")
     if st.button("Restart game", use_container_width=True):
@@ -30,7 +33,7 @@ with st.sidebar:
             st.session_state.pop(key, None)
         st.rerun()
 
-context = (version, online)
+context = (version, online, provider, model)
 if st.session_state.get("context") != context:
     for key in ["history", "game", "pending", "won"]:
         st.session_state.pop(key, None)
@@ -52,8 +55,8 @@ if is_v2:
 else:
     st.warning("V1 relies on the model for rules and memory. Its escape claims are not independently validated.")
 if not online:
-    st.info("Offline practice supports V2 only. Enable Gemini to run the actual AI versions.")
-if online and not (os.getenv("GEMINI_API_KEY") and os.getenv("GEMINI_MODEL")):
+    st.info("Offline practice supports V2 only. Enable online AI to run the actual AI versions.")
+if online and not (os.getenv(provider.upper() + "_API_KEY") and model):
     st.warning("API configuration is missing. Add your key and free-tier model to .env, then restart Streamlit.")
 
 with st.sidebar:
@@ -63,8 +66,9 @@ with st.sidebar:
     if is_v2:
         st.subheader("Your inventory")
         st.write(", ".join(st.session_state.game.inventory) or "Empty")
-    transcript = {"version": version, "mode": "Gemini" if online else "offline",
-                  "model": os.getenv("GEMINI_MODEL", "") if online else None,
+    transcript = {"version": version, "mode": provider.capitalize() if online else "offline",
+                  "provider": provider if online else None,
+                  "model": model if online else None,
                   "messages": st.session_state.history,
                   "state": st.session_state.game.public() if is_v2 else None}
     st.download_button("Download session evidence", json.dumps(transcript, indent=2),
