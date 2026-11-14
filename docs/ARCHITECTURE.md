@@ -43,3 +43,13 @@ Game facts always come from the engine. The atmosphere model can select only
 one of three developer-written sentences; unexpected output is discarded. Its
 failure does not roll back a legitimately completed action. Parser failure occurs
 before confirmation and cannot apply an action. Restart replaces state and history.
+
+
+## Provider selection
+
+The diagrams show the verified Gemini route. `llm.py` also supports an explicit
+Groq provider selection and an optional Gemini Interactions transport. These use
+the same application-level interfaces and rule engine. Only Gemini generateContent
+with gemini-3.6-flash has a reviewed full online walkthrough. Groq JSON object mode
+does not enforce the requested schema server-side; local proposal validation is
+still required. No automatic switch to another provider occurs.

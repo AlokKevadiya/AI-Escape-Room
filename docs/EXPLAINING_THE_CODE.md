@@ -18,15 +18,17 @@ or atmosphere prompts. They are spoilers visible to repository readers, not API
 credentials. Real API credentials are environment variables and ignored by Git.
 
 **Is the offline mode AI?** No. It is a limited deterministic parser used for
-practice and testing without spending quota. Both actual AI versions require Gemini.
+practice and testing without spending quota. Both actual AI versions require an online provider; Gemini is verified for the
+V2 walkthrough and Groq is optional.
 
 **Why limit narration?** A freely generated sentence could say 'the door opens'
 while Python says it is locked. V2 uses engine-authored outcomes plus safe atmosphere.
 The tradeoff is reduced creativity in exchange for consistent game facts.
 
-**What is still uncertain?** Real Gemini interpretation quality and V1 failure rates
-need live tests. Mocked tests verify integration contracts, not provider behavior.
+**What is still uncertain?** One V2 Gemini walkthrough passed. Broader interpretation quality, online
+adversarial behavior and V1 failure rates still need live tests. Mocked tests verify integration contracts, not provider behavior.
 
 **What would you improve next?** More natural-language paraphrase tests, a larger
 safe narration library, better action labels and optional saved-game persistence.
 Review all code and change the story/puzzles if you want to make the design your own.
+

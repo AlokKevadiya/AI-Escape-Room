@@ -3,10 +3,10 @@
 ## What still requires the student
 
 - Ensure the instructor can access the private GitHub repository.
-- Configure a free-tier Gemini key and valid model in local `.env`.
+- Completed: configured Gemini and captured one V2 online success session.
 - Run both versions live; record at least five comparison cases from TESTING.md.
-- Capture actual screenshots or a short screen recording. Current package has no
-  app screenshots: the browser in the build environment could not access the server.
+- Completed: V2 online success screenshot and transcript. Capture V1 and online
+  rejection-test evidence next; preserve actual outcomes.
 - Update the report with measured V1 behavior and review all AI-assisted material.
 
 ## Screenshot / video plan (about 3 minutes)
@@ -45,3 +45,4 @@ commands against it; this section documents archive recovery for a new empty des
 On the tablet, a GitHub Codespace can provide a terminal and Python environment;
 choose only a free allowance and stop it when finished. A Windows PC is another
 option. Uploading files through the website alone loses the staged commit history.
+

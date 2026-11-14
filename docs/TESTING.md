@@ -1,6 +1,6 @@
 # Test cases and evidence
 
-Run `python -m pytest -q`. Local result: **40 passed**, 11 November 2026.
+Run `python -m pytest -q`. Local result: **49 passed**, 14 November 2026.
 Tests cover offline parsing, pure engine transitions, mocked Gemini output and
 Streamlit's AppTest interface. They are not a live Gemini evaluation.
 
@@ -24,7 +24,8 @@ case three times, since a single stochastic response is not conclusive.
 | 11. Malformed model JSON / invented code | Mocked response | Baseline has no structured validation | Invalid proposal; fabricated code rejected |
 | 12. Confirmation, cancellation and restart | UI controls | V1 has restart only | No mutation before confirm; cancel safe; restart clears state |
 
-**Live V1 observations: pending. Live V2 parser behavior: pending.** The structural
+**Live V1 observations: pending. V2 online happy path: passed once on 14 November
+2026 with gemini-3.6-flash. V2 online adversarial behavior: pending.** The structural
 protections above are implemented and locally tested; the parser can still select
 the wrong legal action. The visible confirmation and backend validation remain
 necessary. A legal but unintended proposal is a usability failure, even if state
@@ -37,8 +38,9 @@ integrity is preserved. Record such failures honestly.
   derived from `__file__` fixed this; all 40 tests then passed.
 - The connected browser could not reach the local Streamlit server. Therefore
   no rendered-app screenshots or browser visual checks are claimed here.
-- No Gemini key/model was configured, so genuine V1 vulnerabilities have not
-  yet been measured. Hypotheses above must not be relabeled as observed failures.
+- At initial implementation no Gemini key/model was configured. V2 online
+  walkthrough evidence is now available; genuine V1 vulnerabilities have not yet
+  been measured. Hypotheses above must not be relabeled as observed failures.
 
 ## Live results worksheet
 
@@ -52,3 +54,15 @@ Copy for each case after running the app:
 - Expected vs actual result:
 - Transcript filename / screenshot:
 - Improvement demonstrated or remaining limitation:
+
+
+## Reviewed live V2 walkthrough
+
+[evidence/v2-online-success.json](evidence/v2-online-success.json) contains eight
+user actions and their responses. Model: gemini-3.6-flash; mode: Gemini. All three
+puzzles are solved; inventory is key and note; escaped is true. Replaying the
+recorded commands through the Python engine reproduced the exported final state.
+This replay checks state consistency only; it does not replay the remote LLM.
+The user-provided screenshots corroborate that online AI was enabled. The export
+has no timestamps, raw proposals or API request IDs; it is session evidence, not
+a signed provider log. No API keys or personal messages were found in this file.

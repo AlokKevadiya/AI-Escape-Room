@@ -73,3 +73,11 @@ Current free-plan model/limits reference:
 https://console.groq.com/docs/rate-limits
 JSON mode reference:
 https://console.groq.com/docs/structured-outputs
+
+
+## Verified route, 14 November 2026
+
+Gemini 3.6 Flash with generate_content passed the real parser probe and the user
+completed the eight-action online V2 walkthrough. The session and screenshot are
+committed in docs/evidence and docs/screenshots. Earlier Interactions attempts
+returned 503 or timed out; that route and Groq remain unverified live.

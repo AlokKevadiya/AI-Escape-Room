@@ -4,8 +4,9 @@ A Python game that demonstrates why an LLM should not be the sole authority for
 application state. Explore five objects, solve three connected puzzles and escape.
 Version 1 delegates the game to Gemini; Version 2 validates every move in Python.
 
-**Status:** both versions implemented; 40 local automated checks passed. Live Gemini
-sessions and visual demo screenshots are still pending user API configuration.
+**Status (14 November 2026):** both versions implemented; 49 local automated tests
+passed and the reviewed GitHub Actions run succeeded. V2 completed a live Gemini
+3.6 Flash playthrough; V1 live comparison and V2 online adversarial tests remain pending.
 Offline practice is a real deterministic game, **not evidence of a live LLM run**.
 
 ## Quick start (Python 3.11+)
@@ -33,7 +34,7 @@ unchanged. Switching version/mode or restarting starts a fresh session.
    Model availability and quota change, so the project intentionally has no hardcoded default.
 3. Copy `.env.example` to `.env` in the repository root. Enter your key in
    `GEMINI_API_KEY` and the model ID in `GEMINI_MODEL` (no `models/` prefix needed).
-4. Restart Streamlit, enable **Use Gemini**, and select V1 or V2.
+4. Restart Streamlit, enable **Use online AI**, and select V1 or V2.
 5. Do not paste the key into chat, source code, screenshots or GitHub.
 
 A ChatGPT subscription is unrelated to this API. No training, GPU or paid API is
@@ -86,13 +87,16 @@ python -m pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-[40 automated checks passed](docs/automated-test-results.txt) locally on 11 November
+[49 automated checks passed](docs/automated-test-results.txt) locally on 14 November
 2026 using Python 3.12. GitHub Actions is configured for Python 3.11; check the repository's Actions tab
 for its current result. The local result above is distinct from hosted CI. API responses are mocked in relevant automated
 tests; these do not establish actual Gemini behavior.
 
 - [Test cases and V1/V2 comparison](docs/TESTING.md)
-- [Three-page design report](docs/Project_Report.pdf)
+- [Three-page initial design report](docs/Project_Report.pdf) — dated 11 November;
+  see [the current review](docs/REVIEW.md) for newer evidence and remaining work.
+- [V2 online success transcript](docs/evidence/v2-online-success.json)
+- [Online setup and alternative provider](docs/ONLINE_SETUP.md)
 - [Demonstration and submission checklist](docs/DEMO.md)
 - [Code explanation for class](docs/EXPLAINING_THE_CODE.md)
 
@@ -106,7 +110,8 @@ the report does not fabricate them.
 |---|---|
 | `app.py` | Streamlit UI, session lifecycle, confirmation and transcript download |
 | `escape_room/world.py` | Room description and author-owned puzzle rules |
-| `escape_room/llm.py` | Gemini adapter, timeouts and safe error messages |
+| `escape_room/llm.py` | Provider selection, timeouts and safe error messages |
+| `escape_room/interactions.py`, `groq_adapter.py` | Optional API transports |
 | `escape_room/v1.py` | Conversational baseline |
 | `escape_room/engine.py` | State, inventory and authoritative validation |
 | `escape_room/v2.py` | Untrusted model parsing and constrained narration |
@@ -120,7 +125,8 @@ a database-backed multiplayer game. Offline parsing recognizes a limited grammar
 online parsing can misunderstand input, so players confirm the proposed action.
 Source code and tests contain puzzle answers: this is educational game logic,
 not a secure way to hide answers from someone reading the repository.
-V1 sends conversation history to Google; V2 sends the current action and a separate
+V1 sends conversation history to the selected provider (Gemini by default, Groq
+optional); V2 sends the current action and a separate
 fixed list of atmosphere options. Do not enter personal information. Logs and
 transcripts are local unless you explicitly download/share them.
 
@@ -138,5 +144,13 @@ live tests, and be able to explain every submitted component.
 
 Published at https://github.com/AlokKevadiya/AI-Escape-Room. The repository was
 created private; grant your instructor access or deliberately change visibility
-before submitting. Live Gemini comparison tests and demonstration screenshots
-remain to be completed. See docs/DEMO.md for the remaining checklist.
+before submitting. Live comparison tests and the final report refresh remain
+to be completed. The V2 online success screenshot is below. See docs/DEMO.md for the remaining checklist.
+
+
+## Online demonstration
+
+![Version 2 online escape using Gemini 3.6 Flash](docs/screenshots/v2-online-success.jpg)
+
+User-provided screen and transcript reviewed on 14 November 2026. This records
+one successful walkthrough, not an adversarial evaluation or reliability rate.
