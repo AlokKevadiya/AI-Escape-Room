@@ -4,14 +4,20 @@ A Python game that demonstrates why an LLM should not be the sole authority for
 application state. Explore five objects, solve three connected puzzles and escape.
 Version 1 delegates the game to Gemini; Version 2 validates every move in Python.
 
-**Status (14 November 2026):** both versions implemented; 49 local automated tests
-passed and the reviewed GitHub Actions run succeeded. V2 completed a live Gemini
-3.6 Flash playthrough; V1 live comparison and V2 online adversarial tests remain pending.
-Offline practice is a real deterministic game, **not evidence of a live LLM run**.
+**Status (14 November 2026):** both versions implemented and demonstrated online.
+Complete eight-action Gemini playthroughs and two invalid-action observations for
+each version are preserved. Both versions rejected the two invalid actions; no
+V1 failure is claimed from these observations. V2 adds independent Python rule
+validation. The automated suite has 49 passing checks; five additional offline
+rejection examples are documented separately from live evidence.
+
+Technologies: Python, Streamlit, Google Gen AI SDK, python-dotenv and pytest.
 
 ## Quick start (Python 3.11+)
 
 ```bash
+git clone https://github.com/AlokKevadiya/AI-Escape-Room.git
+cd AI-Escape-Room
 python -m venv .venv
 # Windows PowerShell:
 .venv\Scripts\Activate.ps1
@@ -75,7 +81,6 @@ general. See [architecture diagrams](docs/ARCHITECTURE.md).
 Both versions remain selectable in the current app. `escape_room/v1.py` is the
 baseline; `engine.py` and `v2.py` implement the improved version. GitHub branch `version-1`
 records the original baseline app; `version-2` records the first V2 implementation.
-The downloadable Git bundle retains the original `v1.0` and `v2.0` tags.
 Later commits add tests, documentation and refinements. The four saved development
 milestones were replayed onto GitHub after repository creation; their contents and
 order are preserved, with new commit IDs. History was not backdated.
@@ -93,8 +98,9 @@ for its current result. The local result above is distinct from hosted CI. API r
 tests; these do not establish actual Gemini behavior.
 
 - [Test cases and V1/V2 comparison](docs/TESTING.md)
-- [Three-page initial design report](docs/Project_Report.pdf) — dated 11 November;
-  see [the current review](docs/REVIEW.md) for newer evidence and remaining work.
+- [Updated three-page project report](docs/Project_Report.pdf)
+- [V1 online success transcript](docs/evidence/v1-online-success.json)
+- [Observed online comparison](docs/evidence/online-comparison.md)
 - [V2 online success transcript](docs/evidence/v2-online-success.json)
 - [Online setup and alternative provider](docs/ONLINE_SETUP.md)
 - [Demonstration and submission checklist](docs/DEMO.md)
@@ -142,15 +148,24 @@ live tests, and be able to explain every submitted component.
 
 ## Repository and submission
 
-Published at https://github.com/AlokKevadiya/AI-Escape-Room. The repository was
-created private; grant your instructor access or deliberately change visibility
-before submitting. Live comparison tests and the final report refresh remain
-to be completed. The V2 online success screenshot is below. See docs/DEMO.md for the remaining checklist.
+Repository: https://github.com/AlokKevadiya/AI-Escape-Room. Submit this URL.
+The repository is private: the owner must grant the instructor access or explicitly
+choose to publish it before submission. A Codespaces forwarded app URL is temporary
+and is not a substitute for repository access. See [requirement mapping](docs/REVIEW.md).
 
+## Online demonstrations
 
-## Online demonstration
+### V1: model-managed game
 
-![Version 2 online escape using Gemini 3.6 Flash](docs/screenshots/v2-online-success.jpg)
+![V1 online escape](docs/screenshots/v1-online-success.jpg)
 
-User-provided screen and transcript reviewed on 14 November 2026. This records
-one successful walkthrough, not an adversarial evaluation or reliability rate.
+This screenshot records an earlier successful V1 session. A subsequent complete
+repeat was exported as [V1 online success](docs/evidence/v1-online-success.json).
+
+### V2: Python-validated game
+
+![V2 online escape](docs/screenshots/v2-online-success.jpg)
+
+The [V2 transcript](docs/evidence/v2-online-success.json) includes explicit final
+state. Screenshots and exports are user-recorded evidence reviewed on 14 November
+2026; they are not signed provider logs or reliability benchmarks.

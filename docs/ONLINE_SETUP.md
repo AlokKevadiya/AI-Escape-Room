@@ -1,83 +1,56 @@
-# Online connection troubleshooting
+# Online setup and troubleshooting
 
-The original generateContent adapter remains the default. An optional Interactions
-REST adapter now supports both V1 conversation history and V2 structured parsing.
-It uses Google's official endpoint, store=false, and a 60-second timeout. It does
-not switch providers, enable billing, retry indefinitely, or claim offline output
-is AI-generated. Use a free-tier project as required by the assignment.
+The recorded successful route for both versions is Gemini with `generate_content`.
+The saved sessions identify `gemini-3.6-flash`; this is historical evidence from the
+user's project, not a guarantee that the model is available to every account.
 
-From the project root, with your existing private .env:
+1. Copy `.env.example` to `.env` in the project root.
+2. Privately set GEMINI_API_KEY and a model ID available to your account. Leave
+   LLM_PROVIDER=gemini and GEMINI_TRANSPORT=generate_content.
+3. Use only a free-tier project without billing for this project.
+4. Run the smoke test with your selected model ID:
 
 ```sh
-python check_online.py --model gemini-3.8-flash --transport interactions
+python check_online.py --provider gemini --model YOUR_AVAILABLE_MODEL_ID --transport generate_content
 ```
 
-This makes one actual V2 structured-parser request. Only a correct action saves
-GEMINI_MODEL and GEMINI_TRANSPORT to .env. On failure, settings stay unchanged.
-Use a model available to your project. A successful check is a connection smoke
-test, not proof that the full game or V1 adversarial tests passed.
+Replace the placeholder; do not paste an API key into the command. The probe checks
+one V2 action (`examine bookshelf`) and saves model/provider settings only on success.
+It does not test V1, the complete game or long-term availability.
 
-After SUCCESS, stop Streamlit with Ctrl+C and restart:
+Stop the existing Streamlit process with Ctrl+C, then restart:
 
 ```sh
 python -m streamlit run app.py --server.address 0.0.0.0 --server.port 8501
 ```
 
-Enable Use Gemini and test both versions. Download session evidence separately
-for each. Existing offline evidence must remain labelled offline.
+In Codespaces, open the current port 8501 forwarded link. If the port is occupied,
+stop the existing app in its terminal first. Enable **Use online AI** and select the
+version. Changes to .env require a process restart; restarting the game is different.
 
-To test the original route, pass --transport generate_content. HTTP 503 means
-service overload; 504 means timeout; 429 requires checking the project's quota.
-The Interactions route may also fail during service disruption. No live success
-is claimed for this change until tested with the user's project credentials.
+## Observed failures
 
-The adapter has mocked tests for schema transmission, history conversion,
-response extraction, failed/empty responses, and credential-safe error messages.
-All 45 project tests passed locally after the change.
+| Message | Interpretation and next step |
+|---|---|
+| 429 | Check account quota/rate limits; repeated requests do not restore quota. |
+| 503 | Service reported overload; retry later or use another available model. |
+| 504 / timeout | Request did not finish; a subsequent request may still succeed. |
+| 404 | Verify exact model ID and API route for the account. |
+| App URL 404 | Check Codespace, running server and forwarded port; this is distinct from an API model error. |
 
-References:
-- https://ai.google.dev/gemini-api/docs/migrate-to-interactions
-- https://ai.google.dev/gemini-api/docs/structured-output
+These failures were observed during the project. Availability is external to the
+game. Failed parser requests apply no move. After a confirmed V2 transition,
+atmosphere failure leaves the engine result intact. Failed requests are not fully
+recorded in exported conversation JSON; do not infer error history from JSON alone.
 
+## Optional adapters
 
-## Alternative: Groq free plan
+`--transport interactions` selects the optional Gemini REST adapter. Groq requires
+its own private GROQ_API_KEY, available GROQ_MODEL and `--provider groq`.
+Neither is an automatic fallback. Both have mocked adapter tests; neither has a
+successful live session in the submitted evidence. Use the verified route first.
+Never commit .env or share a screenshot of its values. Revoke any exposed key.
 
-Repeated Gemini 503s were also observed with the Interactions route. The app now
-supports Groq explicitly for V1 and V2. This is an alternative, not an automatic
-fallback. Model responses and game messages are sent to the selected provider.
-
-1. Create a free Groq account and API key at https://console.groq.com/keys.
-2. Add GROQ_API_KEY to your private .env. Do not enable a paid plan.
-3. Run:
-
-```sh
-python check_online.py --provider groq --model openai/gpt-oss-20b
-```
-
-Only a successful real V2 parser request saves LLM_PROVIDER=groq and GROQ_MODEL.
-Restart Streamlit, then enable **Use online AI**. The sidebar and evidence export
-identify the selected provider and model. Gemini settings remain available.
-
-Groq uses JSON object mode with the schema included in the prompt. This guarantees
-neither schema compliance nor correct action interpretation; the existing V2
-validator, confirmation step and Python rule engine remain authoritative.
-V1 still relies on the LLM and is intentionally not protected by that engine.
-Both versions preserve conversation/session behavior. Each V2 confirmed action
-still uses an additional constrained atmosphere request, so allow for rate limits.
-
-Local verification: 49 tests passed, including provider routing, V1 role history,
-JSON requests, truncated-output rejection and redacted errors. Groq live testing
-is pending the user's key; no online success is claimed yet.
-
-Current free-plan model/limits reference:
-https://console.groq.com/docs/rate-limits
-JSON mode reference:
-https://console.groq.com/docs/structured-outputs
-
-
-## Verified route, 14 November 2026
-
-Gemini 3.6 Flash with generate_content passed the real parser probe and the user
-completed the eight-action online V2 walkthrough. The session and screenshot are
-committed in docs/evidence and docs/screenshots. Earlier Interactions attempts
-returned 503 or timed out; that route and Groq remain unverified live.
+References: [Gen AI SDK](https://googleapis.github.io/python-genai/),
+[Gemini API](https://ai.google.dev/api/generate-content),
+[Groq documentation](https://console.groq.com/docs/overview).

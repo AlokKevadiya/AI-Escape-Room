@@ -1,55 +1,61 @@
 # System architecture
 
-## Version 1: conversational authority
+## Version 1: conversational baseline
+
+![V1 architecture](diagrams/v1-architecture.png)
 
 ```mermaid
 flowchart TD
-    U[Player message] --> UI[Streamlit interface]
-    UI --> H[Session conversation history]
-    H --> L[Gemini Game Master]
-    R[Room rules and all puzzle solutions] --> L
-    L --> O[Free-form response and escape marker]
-    O --> UI
-    O --> H
+    UI[Streamlit chat] --> History[Conversation history]
+    Rules[Room rules and puzzle solutions] --> LLM[LLM game master]
+    History --> LLM
+    LLM --> Reply[Generated reply and escape marker]
+    Reply --> UI
 ```
 
-The model decides what happens. The UI trusts its escape marker. The prompt asks
-for consistent behavior, but there is no independent inventory or rule enforcement.
+`app.py` owns the UI and history. `v1.py` sends the full room rules and history
+through `llm.py`. The model interprets actions, remembers items and decides outcomes.
+The UI trusts its `[ESCAPED]` marker; no engine independently verifies a V1 victory.
+The export therefore has `state: null`. This is an intentional baseline limitation.
 
-## Version 2: validated authority
+## Version 2: validated transitions
+
+![V2 architecture](diagrams/v2-architecture.png)
 
 ```mermaid
 flowchart TD
-    U[Player message] --> P[Gemini action parser]
-    P --> C[Schema checks and player confirmation]
-    C --> E[Python rule engine]
-    R[Author puzzle rules] --> E
-    S[Session game state] --> E
-    E --> S
-    E --> O[Validated outcome]
-    N[Gemini selects safe atmosphere] --> O
-    O --> UI[Streamlit response and progress]
-    U --> F[Offline parser when selected]
-    F --> C
+    Input[Player input] --> Parser[LLM action parser]
+    Parser --> Validate[JSON and literal-value checks]
+    Validate --> Confirm[Player confirmation]
+    Confirm --> Engine[Python rule engine]
+    State[Session state and author rules] --> Engine
+    Engine --> Result[Next state and factual outcome]
+    Result --> Display[Streamlit display and export]
+    Atmosphere[LLM selects a safe atmosphere sentence] --> Display
 ```
 
-The parser returns only a proposal. It has no function that writes state and does
-not receive author solutions. Code/answer values must appear literally in the
-player's message. Player confirmation protects against interpretation mistakes;
-Python still checks prerequisites after confirmation. The engine copies state
-before evaluating a transition, so rejected moves cannot partially update it.
+The diagram shows the accepted-action path. Invalid proposals return a rejection;
+cancelled proposals do not reach the engine. `engine.apply` checks inventory,
+passwords and prerequisites, returning a copied next state and authored outcome.
+Only Python can change inventory, puzzle flags or escape status. The UI stores
+that state before requesting optional atmosphere. An atmosphere failure does not
+undo a validated transition. Parser/API failure before confirmation applies no move.
 
-Game facts always come from the engine. The atmosphere model can select only
-one of three developer-written sentences; unexpected output is discarded. Its
-failure does not roll back a legitimately completed action. Parser failure occurs
-before confirmation and cannot apply an action. Restart replaces state and history.
+The parser receives the current message and action schema, not author solutions or
+conversation history. Entered codes and answers must occur in the player's input.
+Atmosphere generation selects one of three fixed sentences and receives no game
+secrets. This prevents generated narration from overriding engine-authored facts.
+It does not guarantee correct interpretation: a player must review the proposal.
 
+## Shared components and boundaries
 
-## Provider selection
+- `app.py`: version selection, restart, history, confirmation and JSON export.
+- `world.py` and `engine.py`: story, puzzle rules and V2 state transitions.
+- `llm.py`: explicit provider selection, timeout and sanitized error messages.
+- `.env`: private credentials; `.env.example`: blank configuration template.
+- Offline V2 replaces only the LLM parser with deterministic grammar and omits atmosphere.
+- Gemini generate_content is the demonstrated route. Interactions and Groq adapters
+  have mocked tests but no successful live session evidence in this submission.
 
-The diagrams show the verified Gemini route. `llm.py` also supports an explicit
-Groq provider selection and an optional Gemini Interactions transport. These use
-the same application-level interfaces and rule engine. Only Gemini generateContent
-with gemini-3.6-flash has a reviewed full online walkthrough. Groq JSON object mode
-does not enforce the requested schema server-side; local proposal validation is
-still required. No automatic switch to another provider occurs.
+Both versions are available on main. The version-1 and version-2 branches preserve
+initial development milestones; main contains the final integrated application.

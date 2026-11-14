@@ -1,34 +1,41 @@
 # Explain the project in class
 
-**What is the problem?** LLMs can tell a compelling story but may contradict prior
-turns or treat a player's claim as a fact. Application state needs independent rules.
+**Problem:** An LLM can generate plausible game narration without independently
+verifiable inventory or puzzle progress. A stateful game needs explicit rules.
 
-**What did V1 do?** `v1.respond` sends room instructions and conversation history
-to Gemini. The model is narrator and referee. The app recognizes its escape marker.
+**V1:** `v1.respond` sends the room rules and conversation history through `llm.py`.
+The model acts as narrator and referee. `app.py` trusts its escape marker. V1's
+exported state is null because it has no independently validated engine state.
 
-**What changed?** V2's model proposes an Action with verb, target and value.
-The user confirms it; `engine.apply` checks it against a State dataclass and author
-rules. Only a validated transition produces the next state.
+**V2:** `v2.propose` extracts an Action (verb, target, value). It validates the JSON,
+checks entered values against the user's message and asks the user to confirm.
+`engine.apply` enforces inventory and puzzle prerequisites against a State dataclass.
+It returns a copied next state and factual outcome; rejected actions preserve state.
 
-**Why copy the state?** A rejected move must not leave a partial inventory or lock
-change. The old state stays intact, which also makes tests easier to reason about.
+**Secrets:** Author solutions live in the Python game rules, not the V2 parser or
+atmosphere prompts. They are still visible to source-code readers. API keys are
+different: they belong only in environment variables/private .env files.
 
-**Where are secrets?** The puzzle answers are in author code, never in V2 parser
-or atmosphere prompts. They are spoilers visible to repository readers, not API
-credentials. Real API credentials are environment variables and ignored by Git.
+**Narration:** V2 chooses one of three safe atmosphere sentences and appends the
+engine outcome. A failed atmosphere call preserves the validated result. This
+reduces contradictory prose but also reduces creativity.
 
-**Is the offline mode AI?** No. It is a limited deterministic parser used for
-practice and testing without spending quota. Both actual AI versions require an online provider; Gemini is verified for the
-V2 walkthrough and Groq is optional.
+**Evidence:** Both V1 and V2 completed recorded online walkthroughs with Gemini.
+Both rejected the two live invalid inputs. V2 additionally has five offline
+rejection examples and automated rule checks. Do not describe hypothetical V1
+vulnerabilities as observed failures or offline parsing as AI inference.
 
-**Why limit narration?** A freely generated sentence could say 'the door opens'
-while Python says it is locked. V2 uses engine-authored outcomes plus safe atmosphere.
-The tradeoff is reduced creativity in exchange for consistent game facts.
+**Availability:** API quota and service errors interrupted testing. The app reports
+sanitized errors and uses no unbounded retry loop. V2 normally needs two calls per
+confirmed action; V1 needs one. A parser smoke-test success is not a full V1 test.
 
-**What is still uncertain?** One V2 Gemini walkthrough passed. Broader interpretation quality, online
-adversarial behavior and V1 failure rates still need live tests. Mocked tests verify integration contracts, not provider behavior.
+**Limitations:** Sessions are in memory; no durable save/reload. The model may choose
+an unintended legal action. The export is a conversation plus final state, not a
+complete audit log. Repeated successful commands can repeat stale descriptions.
+Groq and Interactions have mocked tests but no successful live evidence here.
 
-**What would you improve next?** More natural-language paraphrase tests, a larger
-safe narration library, better action labels and optional saved-game persistence.
-Review all code and change the story/puzzles if you want to make the design your own.
+**Next improvements:** More live paraphrase trials, clearer repeated-action messages,
+optional durable state, richer constrained narration and a more complete event log.
 
+The project used AI coding assistance. Review the actual functions and tests so
+you can explain the behavior and limitations in your own words.

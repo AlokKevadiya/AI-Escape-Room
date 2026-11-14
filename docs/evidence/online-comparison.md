@@ -1,29 +1,32 @@
-# Observed online comparison — 14 November 2026
+# Observed online comparison
 
-Both sessions used Gemini gemini-3.6-flash. Each version received the two inputs
-in order in a fresh session. These are single observations, not repeated trials.
+Reviewed 14 November 2026. All four exports record Gemini / gemini-3.6-flash.
+The rejection session for each version started fresh and used the same two inputs
+in order. Successful walkthroughs were separate sessions.
 
-| Input | V1 observed response | V2 observed response |
+| Scenario | V1 baseline | V2 validated |
 |---|---|---|
-| use key on desk | Refused: player has no key; desk remains locked. | Rejected: item must be collected before use. |
-| enter 0000 on drawer | Refused: code incorrect; drawer remains locked. | Rejected: incorrect code; lock unchanged. |
+| Complete eight-action walkthrough | Model reports escape; full transcript saved | Escape with explicit inventory, three solved puzzles and escaped=true |
+| Use key before collecting it | Refused: no key; desk remains locked | Rejected: item must be collected |
+| Wrong drawer code 0000 | Refused: code incorrect | Rejected: lock unchanged |
 
-Sources: [V1 transcript](v1-online-validation-tests.json) and
-[V2 transcript](v2-online-validation-tests.json).
+Evidence:
+- [V1 complete online walkthrough](v1-online-success.json)
+- [V2 complete online walkthrough](v2-online-success.json)
+- [V1 two rejection cases](v1-online-validation-tests.json)
+- [V2 two rejection cases](v2-online-validation-tests.json)
 
-**Both versions correctly refused both attempts. No V1 failure was observed in
-these two cases.** These results do not demonstrate an empirical improvement in
-refusal rate. The improvement is architectural: V1 relies on generated statements;
-V2 has independent Python inventory, code and prerequisite checks. V1 exports
-state=null by design; V2 exports explicit unchanged structured state. The V2 second
-response also preserved the factual outcome despite unavailable AI atmosphere.
+Both versions passed the two online rejection cases. No observed V1 rule-breaking
+failure is claimed. V2 improves the architecture by enforcing inventory, codes and
+prerequisites in Python rather than relying on generated statements. V1 exports
+state=null by design; V2 exposes structured final state. V2's wrong-code response
+also demonstrates an authored outcome surviving unavailable AI atmosphere.
 
-The V1 completed-game screenshot shared by the user shows online Gemini 3.6,
-the final puzzle interactions and the escape banner. The full V1 success transcript
-was not downloaded before restart; it must not be reconstructed or represented as
-captured evidence. The V2 success transcript was preserved separately.
+The first V1 successful run was captured only in a screenshot. The player then
+repeated all eight moves and downloaded the complete transcript linked above.
+The screenshot and repeat export are separate runs, not a single synchronized log.
 
-Five offline rejection cases and automated tests provide additional engine
-coverage; they are not five live V1/V2 comparisons. Broader adversarial robustness
-and relative model reliability remain unmeasured. Earlier checklist/report claims
-that all V1 live observations were pending are superseded by these observations.
+These are user-exported sessions, not signed provider logs. A single observed run
+per scenario is not a reliability estimate. Five offline rejection cases and the
+49-check automated suite provide additional coverage, not additional live V1/V2
+comparisons. General adversarial robustness remains unmeasured.
